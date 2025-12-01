@@ -1,5 +1,5 @@
-from flask_sqlalchemy import SQLALchemy
+from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 
-db =  SQLALchemy()
+db =  SQLAlchemy()
 csrf = CSRFProtect()

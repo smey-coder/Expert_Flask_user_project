@@ -20,7 +20,7 @@ def create_app(config_class: type[Config] = Config):
     
     #Create tables
     with app.app_context():
-        from app.models import user
+        from app.models import User
         db.create_all()
         
     return app
