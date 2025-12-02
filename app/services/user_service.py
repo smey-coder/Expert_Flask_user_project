@@ -30,7 +30,7 @@ class UserService:
         user.username = data["username"]
         user.email = data["email"]
         user.full_name = data["full_name"]
-        user.is_active = data.get["is_active", True]
+        user.is_active = data.get("is_active", True)
         
         if password:
             user.set_password(password)
@@ -38,7 +38,7 @@ class UserService:
         db.session.commit()
         return user
     
-    @ staticmethod
+    @staticmethod
     def delete(user: User) -> None:
         db.session.delete(user)
         db.session.commit()

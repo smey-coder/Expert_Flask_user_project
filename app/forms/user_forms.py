@@ -11,6 +11,10 @@ from extensions import db
 def strong_password(form, field):
     """Requirement: min 8 chars, upper, lower, digit, special."""
     password = field.data or ""
+    # If password is empty (optional field) don't enforce strength here;
+    # DataRequired is used in create form to force password entry.
+    if not password:
+        return
     if len(password) < 8:
         raise ValidationError("Password must be at least 8 characters long.")
     
@@ -33,12 +37,12 @@ class UserCreateForm(FlaskForm):
         render_kw={"placeholder": "Enter username"},
     )
     email = StringField(
-        "Username",
+        "Email",
         validators=[DataRequired(), Email(), Length(max=120)],
         render_kw={"placeholder": "Enter email"},
     )
     full_name = StringField(
-        "Username",
+        "Full name",
         validators=[DataRequired(), Length(min=3, max=120)],
         render_kw={"placeholder": "Enter full name"},
     )
@@ -112,18 +116,17 @@ class UserEditForm(FlaskForm):
     def __init__(self, original_user: User, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.original_user = original_user
-        
-        def validate_username(self, field):
-            q = db.select(User).filter(User.username == field.data, User.id != self.original_user.id)
-            exists = db.session.scalar(q)
-            if exists:
-                raise ValidationError("This username is already taken.")
-            
-        def validate_email(self, field):
-            q = db.select(User).filter(User.username == field.data, User.id != self.original_user.id)
-            exists = db.session.scalar(q)
-            if exists:
-                raise ValidationError("This email is already taken.")
+    def validate_username(self, field):
+        q = db.select(User).filter(User.username == field.data, User.id != self.original_user.id)
+        exists = db.session.scalar(q)
+        if exists:
+            raise ValidationError("This username is already taken.")
+
+    def validate_email(self, field):
+        q = db.select(User).filter(User.email == field.data, User.id != self.original_user.id)
+        exists = db.session.scalar(q)
+        if exists:
+            raise ValidationError("This email is already taken.")
 
 class ConfirmDeleteForm(FlaskForm):
     submit = SubmitField("Confirm Delete")

@@ -1,22 +1,22 @@
-from flask import(
+from flask import (
     Blueprint,
     render_template,
     redirect,
     url_for,
     flash,
-    abort
+    abort,
 )
 
 from app.forms.user_forms import UserCreateForm, UserEditForm, ConfirmDeleteForm
 from app.services.user_service import UserService
 
-user_bp = Blueprint("users", __name__, url_defaults="/users")
+user_bp = Blueprint("users", __name__, url_prefix="/users")
 @user_bp.route("/")
 def index():
     users = UserService.get_all()
     return render_template("users/index.html", users=users)
 
-@user_bp.route("/<int:user_id")
+@user_bp.route("/<int:user_id>")
 def detail(user_id: int):
     user = UserService.get_by_id(user_id)
     if user is None:
@@ -43,7 +43,7 @@ def create():
 @user_bp.route("/<int:user_id>/edit", methods=["GET", "POST"])
 def edit(user_id: int):
     user = UserService.get_by_id(user_id)
-    if user in None:
+    if user is None:
         abort(404)
         
     form = UserEditForm(original_user=user, obj=user)
@@ -62,10 +62,10 @@ def edit(user_id: int):
     
     return render_template("users/edit.html", user = user, form=form)
 
-user_bp.route("/<int:user_id>/delete", methods=["POST"])
-def edit(user_id: int):
+@user_bp.route("/<int:user_id>/delete", methods=["POST"])
+def delete(user_id: int):
     user = UserService.get_by_id(user_id)
-    if user in None:
+    if user is None:
         abort(404)
         
     UserService.delete(user)
